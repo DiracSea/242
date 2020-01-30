@@ -37,15 +37,15 @@ def crawler(query):
     #query = '#beach'; 
     max_tweets = 10
     searched_tweets = [status._json for status in tweepy.Cursor(api.search,  q=query).items(max_tweets)]
-    json_strings = [json.dumps(json_obj) for json_obj in searched_tweets]       
+          
     """
     q: query text
     .items: # of tweets
     """
-    return json_strings
+    return searched_tweets
 
-def writer(json_strings):
-    
+def writer(searched_tweets):
+    json_strings = [json.dumps(json_obj) for json_obj in searched_tweets] 
     out_file = 'samples.json'
     with open(out_file, 'a') as f:
         for tweet in json_strings:
