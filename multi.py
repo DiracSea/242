@@ -7,9 +7,6 @@ import crawler
 import time
 from multiprocessing import Pool, Queue
 from threading import Thread, Lock
-import queue
-import sys
-
 
 
 def MultiThread(queue, thread): 
@@ -47,7 +44,7 @@ def main():
     
     MT = []
     # MP = []
-    for i in range(1,51): 
+    for i in range(1,17): 
         time.sleep(1)
 
         start_time = time.time()    
@@ -56,23 +53,12 @@ def main():
         total_time1 = end_time - start_time
 
         MT.append(total_time1)
-
-    # for i in range(1,6): 
-    #     time.sleep(1)
-
-    #     start_time = time.time()    
-    #     MultiProcessing(q, i, 8)
-    #     end_time = time.time()
-    #     total_time2 = end_time - start_time
-
-    #     MP.append(total_time2)       
-        
+            
  
     print("Sequential End, Task is 1, Time is: {}".format(total_time))
     for i in range(len(MT)):
         print("MultiThread "+str(i+1)+" End, Task is: "+str(i+1)+" , Time is：{}".format(MT[i]))
-    # for i in range(len(MP)):
-    #     print("MultiProcessing "+str(i+1)+" End, Task is: 8, Time is：{}".format(MP[i]))
+
 
 if __name__ == "__main__":
     main()
