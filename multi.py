@@ -7,7 +7,7 @@ import crawler
 import time
 from multiprocessing import Pool, Queue
 from threading import Thread, Lock
-
+ 
 
 def MultiThread(queue, thread): 
     if queue.qsize() < thread: 
