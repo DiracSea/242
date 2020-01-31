@@ -42,9 +42,9 @@ def crawler(query):
     q: query text
     .items: # of tweets
     """
-    return searched_tweets
+    #     return searched_tweets
 
-def writer(searched_tweets):
+    # def writer(searched_tweets):
     json_strings = [json.dumps(json_obj) for json_obj in searched_tweets] 
     out_file = 'samples.json'
     with open(out_file, 'a') as f:
