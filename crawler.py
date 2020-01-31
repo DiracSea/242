@@ -85,8 +85,8 @@ def crawler(query):
                       'geo':tweet_dict["geo"]}
             
             
-            print(new_dict)
-            print("\n\n")
+            # print(new_dict)
+            # print("\n\n")
           
             f.writelines(json.dumps(new_dict)+"\n");
             
