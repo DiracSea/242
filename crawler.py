@@ -11,14 +11,19 @@ import twitter
 import re
 import tweepy
 import simplejson
+from threading import Lock
 
 # if __name__ == '__main__':
 def crawler(query):
     
-    ckey = '37WJxuPqjpTNSnMLR7FlFX0MR'
-    csecret = 'apBwS0mFSlkbs1o5UrCdXxMsAH7TeRv4yemVcYvHGOv8gNyE4a'
-    atoken = '1188950150225416192-Qi9YmpOMh7deaH2BtsEHIlqRTjaCvJ'
-    asecret = 'LHMDQiFb4n2mtn2E3RB41IOMdybbw9NnwSPrM2hpQM0rY'
+    # ckey = '37WJxuPqjpTNSnMLR7FlFX0MR'
+    # csecret = 'apBwS0mFSlkbs1o5UrCdXxMsAH7TeRv4yemVcYvHGOv8gNyE4a'
+    # atoken = '1188950150225416192-Qi9YmpOMh7deaH2BtsEHIlqRTjaCvJ'
+    # asecret = 'LHMDQiFb4n2mtn2E3RB41IOMdybbw9NnwSPrM2hpQM0rY'
+    ckey = 'x3REa2FkcAAhLDTP23tL0DQVU'
+    csecret = '6afyavLJNLn9Iif3aJtktU8j1JysMGKJlRHMcVnz1M13EcS5jQ'
+    atoken = '1219771892296380416-LTwo5hcbX44GNXiHH22SeRLyMfSej9'
+    asecret = 'FbukzpzOhLMwOG8JzM6ETTANL9NOSkFN4locxE4s3kt3L'
     auth = tweepy.OAuthHandler(ckey, csecret)
     auth.set_access_token(atoken, asecret)  
     api = tweepy.API(auth)
@@ -47,6 +52,8 @@ def crawler(query):
     # def writer(searched_tweets):
     json_strings = [json.dumps(json_obj) for json_obj in searched_tweets] 
     out_file = 'samples.json'
+    
+    
     with open(out_file, 'a') as f:
         for tweet in json_strings:
             '''
@@ -83,7 +90,6 @@ def crawler(query):
                       'hashtags':hashtags,
                       'user':tweet_dict["user"],
                       'geo':tweet_dict["geo"]}
-            
             
             # print(new_dict)
             # print("\n\n")
