@@ -3,13 +3,14 @@ Created Date: Thursday, January 30th 2020, 11:17:28 am
 Author: Longze SU
 '''
 
-import crawler
 import time
 from multiprocessing import Pool, Queue
 from threading import Thread, Lock
 import csv
 import os
- 
+
+import crawler
+import query
 
 # def MultiProcessing(queue, processor, task): 
 #     if queue.qsize() < processor: 
@@ -20,46 +21,51 @@ import os
 #         p.apply_async(crawler.crawler,args=(queue.get(),))
 #     p.close    
 #     p.join
-def MultiThread(queue, thread): 
+def MultiThread(queue, thread, max_tweets): 
     for i in range(thread):
-        t = Thread(target=crawler.crawler, args=(queue.get(),))
+        t = Thread(target=crawler.crawler, args=(queue.get(),max_tweets,))
         t.start()
     t.join() 
 
-def getQuery(dir,file): 
-    res = []
-    with open(os.path.join(dir,file), 'r') as f:
-        reader = csv.reader(f) 
-        for line in reader: 
-            res.append(line[0])
-    return res
-
-def main(): 
-    dir_name = 'file'
-    file_name = 'query1.csv'
-    queries = getQuery(dir_name, file_name)
-    q = Queue()
+def genQueue(num): 
+    queries = query.genQueries(num)
+    q = Queue() 
     for i in queries: 
         q.put(i)
-    size = len(queries)
-    MT = []
-    # MP = []
-    while q.qsize(): 
+    return q
 
-        start_time = time.time()    
-        MultiThread(q, 5)
-        end_time = time.time()
-        total_time = end_time - start_time
-        time.sleep(1)
-        start_time = time.time() 
-        MultiThread(q, 5)
-        end_time = time.time()
-        total_time1 = end_time - start_time 
+def main(): 
+    thread_num = 16
 
-        MT.append(total_time+total_time1)
+    for i in range(5,0,-1): 
+        q = genQueue(i)
+        size = q.qsize()
+        MT = []
+        res = thread_num
+        while q.qsize(): 
+            if q.qsize() < thread_num:
+                start_time = time.time() 
+                MultiThread(q, q.qsize(), i*2000) 
+                end_time = time.time()
+
+                total_time = end_time - start_time
+                MT.append(total_time)
+
+                res = res + thread_num
+                print(str(res) + '\n')
+                break
+
+            start_time = time.time()    
+            MultiThread(q, thread_num, i*2000)
+            end_time = time.time()
+            total_time = end_time - start_time
+
+            res = res + thread_num
+            print(str(res) + '\n')
+            MT.append(total_time)
 
 
-    print("MultiThread 5 End, Task is: +"str(size)"+ , Time is：{}".format(sum(MT)))
+        print("MultiThread "+str(thread_num)+" End, Task is: "+ str(size)*i*2000 + " , Time is：{}".format(sum(MT)))
 
 
 if __name__ == "__main__":

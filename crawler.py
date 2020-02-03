@@ -9,12 +9,13 @@ Created on Wed Jan 22 21:47:54 2020
 import json
 import twitter
 import re
+import time
 import tweepy
 import simplejson
 from threading import Lock
 
 # if __name__ == '__main__':
-def crawler(query):
+def crawler(query, max_tweets):
     
     # ckey = '37WJxuPqjpTNSnMLR7FlFX0MR'
     # csecret = 'apBwS0mFSlkbs1o5UrCdXxMsAH7TeRv4yemVcYvHGOv8gNyE4a'
@@ -26,7 +27,7 @@ def crawler(query):
     asecret = 'FbukzpzOhLMwOG8JzM6ETTANL9NOSkFN4locxE4s3kt3L'
     auth = tweepy.OAuthHandler(ckey, csecret)
     auth.set_access_token(atoken, asecret)  
-    api = tweepy.API(auth)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
     
     #1
     #search_result = api.search(q="#LA", count=0, tweet_mode="extended", lang='en')
@@ -40,61 +41,62 @@ def crawler(query):
     #3
     #search=tweepy.Cursor(api.search,q='#LA').items(20)  
     #query = '#beach'; 
-    max_tweets = 10
-    searched_tweets = [status._json for status in tweepy.Cursor(api.search,  q=query).items(max_tweets)]
-          
-    """
-    q: query text
-    .items: # of tweets
-    """
-    #     return searched_tweets
-
-    # def writer(searched_tweets):
-    json_strings = [json.dumps(json_obj) for json_obj in searched_tweets] 
-    out_file = 'samples.json'
     
-    
-    with open(out_file, 'a') as f:
-        for tweet in json_strings:
-            '''
-            1.entities,user
-            '''
+    query = query+" -filter:retweets"
+    # searched_tweets = [] 
+    last_id = -1 
+    itr = 0 
+    num_tweets = 0
+    while num_tweets < max_tweets: 
+        count = max_tweets - num_tweets 
+        
+        try: 
+            new_tweets = api.search(q = query, count=count, tweet_mode="extended", max_id=str(last_id-1))
+            if not new_tweets: 
+                break 
 
-            # store a tweet into the dictionary
-            tweet_dict = simplejson.loads(tweet)
- 
-            #get tweet id
-            #print(tweet_dict["id"])
+            num_tweets = num_tweets + len(new_tweets)
+            last_id = new_tweets[-1].id 
+
+            out_file = 'samples.json'
+            f = open(out_file, 'a')
+            itr += 1
+            json_strings = [json.dumps(status._json) for status in new_tweets]
+
+            json_parser(json_strings, f)
+
+            print("end: " + str(itr))
+            # time.sleep(60)
+        except tweepy.TweepError as e: 
+            print("tweepy error")
+            break
+    
+
+
+def json_parser(json_strings, f): 
+    for tweet in json_strings:
+        '''
+        1.entities,user
+        '''
+
+        # store a tweet into the dictionary
+        tweet_dict = simplejson.loads(tweet)
+        hashtags=[]
+        for hashtag in tweet_dict["entities"]["hashtags"]:
+            #print(hashtag["text"])
+            hashtags.append(hashtag["text"])
             
-            #get time stamp
-            #print(tweet_dict["created_at"])
+        new_dict={'id':tweet_dict["id"],
+                'created_at':tweet_dict["created_at"],
+                'text':tweet_dict["full_text"],
+                'hashtags':hashtags,
+                'user':tweet_dict["user"],
+                'geo':tweet_dict["geo"]}
             
-            # get tweet
-            #print(tweet_dict["text"])
+        print(json.dumps(new_dict), file = f)
+        
+        
             
-            # get user
-            #print(tweet_dict["user"])
-            
-            # get geo
-            #print(tweet_dict["geo"])
-            
-            #get hashtag
-            hashtags=[]
-            for hashtag in tweet_dict["entities"]["hashtags"]:
-                #print(hashtag["text"])
-                hashtags.append(hashtag["text"])
-                
-            new_dict={'id':tweet_dict["id"],
-                      'created_at':tweet_dict["created_at"],
-                      'text':tweet_dict["text"],
-                      'hashtags':hashtags,
-                      'user':tweet_dict["user"],
-                      'geo':tweet_dict["geo"]}
-            
-            # print(new_dict)
-            # print("\n\n")
-          
-            f.writelines(json.dumps(new_dict)+"\n");
             
 
 
