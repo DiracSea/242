@@ -37,7 +37,7 @@ def genQueue(num):
 def main(): 
     thread_num = 16
 
-    for i in range(5,0,-1): 
+    for i in range(2,0,-1): 
         q = genQueue(i)
         size = q.qsize()
         MT = []
@@ -45,7 +45,7 @@ def main():
         while q.qsize(): 
             if q.qsize() < thread_num:
                 start_time = time.time() 
-                MultiThread(q, q.qsize(), i*2000) 
+                MultiThread(q, q.qsize(), 50000) 
                 end_time = time.time()
 
                 total_time = end_time - start_time
@@ -56,7 +56,7 @@ def main():
                 break
 
             start_time = time.time()    
-            MultiThread(q, thread_num, i*2000)
+            MultiThread(q, thread_num, 50000)
             end_time = time.time()
             total_time = end_time - start_time
 
@@ -65,7 +65,7 @@ def main():
             MT.append(total_time)
 
 
-        print("MultiThread "+str(thread_num)+" End, Task is: "+ str(size)*i*2000 + " , Time is：{}".format(sum(MT)))
+        print("MultiThread "+str(thread_num)+" End, Task is: "+ str(size) + " , Time is：{}".format(sum(MT)))
 
 
 if __name__ == "__main__":

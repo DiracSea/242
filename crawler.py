@@ -66,7 +66,6 @@ def crawler(query, max_tweets):
             json_parser(json_strings, f)
 
             print("end: " + str(itr))
-            # time.sleep(60)
         except tweepy.TweepError as e: 
             print("tweepy error")
             break
