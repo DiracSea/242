@@ -38,7 +38,8 @@ def getTop(dir, file, num):
             
         
 
-if __name__ == "__main__":
-    cleaning('result', 'samples.json')
-    print(errNum('result', 'samples.json'))
+# if __name__ == "__main__":
+#     print(errNum('result', 'samples.json'))
+#     cleaning('result', 'samples.json')
+#     print(errNum('result', 'samples.json'))
     #getTop('result', 'samples.json',2)

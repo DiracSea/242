@@ -9,6 +9,7 @@ Created on Wed Jan 22 21:47:54 2020
 import json
 import twitter
 import re
+import os
 import time
 import tweepy
 import simplejson
@@ -41,6 +42,9 @@ def crawler(query, max_tweets):
     #3
     #search=tweepy.Cursor(api.search,q='#LA').items(20)  
     #query = '#beach'; 
+    dir = 'result'
+    file = 'samples.json'
+    out_file = os.path.join(dir,file)
     
     query = query+" -filter:retweets"
     # searched_tweets = [] 
@@ -58,7 +62,7 @@ def crawler(query, max_tweets):
             num_tweets = num_tweets + len(new_tweets)
             last_id = new_tweets[-1].id 
 
-            out_file = 'samples.json'
+
             f = open(out_file, 'a')
             itr += 1
             json_strings = [json.dumps(status._json) for status in new_tweets]
@@ -67,7 +71,8 @@ def crawler(query, max_tweets):
 
             print("end: " + str(itr))
         except tweepy.TweepError as e: 
-            print("tweepy error")
+            print(e.args[0][0]['code'])  
+            print(e.args[0][0]['message'])
             break
     
 
@@ -92,7 +97,7 @@ def json_parser(json_strings, f):
                 'user':tweet_dict["user"],
                 'geo':tweet_dict["geo"]}
             
-        print(json.dumps(new_dict), file = f)
+        f.write(json.dumps(new_dict))
         
         
             
